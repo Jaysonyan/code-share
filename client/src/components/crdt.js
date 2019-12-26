@@ -2,7 +2,7 @@ const MAX_INDEX = 10
 
 class CRDT {
   constructor() {
-    this.pageText = []
+    this.document = new Document()
   }
 
   sendInsert(pos, char) {
@@ -11,26 +11,21 @@ class CRDT {
     console.log(newChar)
   }
 
-  sendDelete(position) {
+  sendDelete(startPos, endPos) {
   }
 
-  receiveInsert() {
+  receiveInsert(character) {
+    this.document.insertChar(character)
   }
 
   receiveDelete(pos) {
   }
 
-  insertChar(character, {row, column}) {
-  }
-
-  getPosFromIndex(index) {
-  }
-
   getIndexFromPos(pos) {
     let { row, column } = pos
 
-    let leftIdx = getLeftIndex(pos)
-    let rightIdx = getRightIndex(pos)
+    let leftIdx = this.document.getLeftChar(pos)
+    let rightIdx = this.document.getLeftChar(pos)
     let returnIdx = []
 
     let i = 0
@@ -56,50 +51,7 @@ class CRDT {
     return returnIdx
   }
 
-  getLeftIndex({row, column}) {
-    if (row === 0 && column === 0) {
-      return []
-    }
-    row -= column === 0 ? 1 : 0
-    return this.pageText[row][column].relativeIndex
-  }
-
-  getRightIndex({row, column}) {
-    let numRows = this.pageText.length
-    let numCols = this.pageText[row].length
-    if (row > numRows) { //created a newline at EOF
-      return []
-    } else if (column === numCols) { //If inserted char is at EOL
-      if (row === numRows) {
-        return []
-      } else {
-        row += 1
-        column = 0
-      }
-    }
-    return this.pageText[row][column].relativeIndex
-  }
-
   toText() {
     return this.text.map(character => character.char).reduce((text, char) => text+char)
   }
 }
-
-/*
- * Text -> Array of text objects
- *
- * insertObj {
- (* char
- * relative index
- * }
- *
- * deleteObj {
- * relative index
- * }
- *
- * 1, 2, 3
- * 1, [1, 5], 2, 3
- * 1, [1, 3], [1, 5], 2, 3
- * 1, [1, 3], [1, 5], [1, 7], 2, 3
- *
-*/
