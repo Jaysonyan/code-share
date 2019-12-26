@@ -7,6 +7,20 @@ class Document {
     return this.text[row][column]
   }
 
+  insertChar(character) {
+    let { row, column } = getPosOfChar(character)
+    if (character.value === '\n') {
+      let newLine = this.text[row].splice(column)
+      this.text.splice(row, 0, newLine)
+    }
+    this.text[row].splice(column, 0, character)
+  }
+
+  deleteChar(startPos, endPos) {
+    let rowDiff = endPos.row - startPos.row - 1
+    this.text.splice(startPos + 1, rowDiff)
+  }
+
   getLeftChar({row, col}) {
     if (row === 0 && column === 0) {
       return []
@@ -31,18 +45,6 @@ class Document {
     return this.text[row][column].relativeIndex
   }
 
-  insertChar(character) {
-    let { row, column } = getPosOfChar(character)
-    if (character.value === '\n') {
-      let newLine = this.text[row].splice(column)
-      this.text.splice(row, 0, newLine)
-    }
-    this.text[row].splice(column, 0, character)
-  }
-
-  deleteChar(startPos, endPos) {
-  }
-
   getPosOfChar(char) {
     let row = binarySearchText(this.text, char, (arrayVal, val) => {
       if (arrayVal.length === 0) {
@@ -55,5 +57,4 @@ class Document {
     ))
     return { row, column }
   }
-
 }

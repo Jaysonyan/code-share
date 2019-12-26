@@ -12,6 +12,7 @@ class CRDT {
   }
 
   sendDelete(startPos, endPos) {
+
   }
 
   receiveInsert(character) {
