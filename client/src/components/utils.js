@@ -17,3 +17,7 @@ function binarySearchText(array, val, compareFcn) {
   }
   return start //Shouldn't ever reach here..?
 }
+
+export {
+  binarySearchText
+}

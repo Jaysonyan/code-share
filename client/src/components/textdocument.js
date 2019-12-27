@@ -1,14 +1,20 @@
-class Document {
+const { binarySearchText } = import("./utils")
+
+class TextDocument {
   constructor() {
     this.text = [[]]
   }
 
-  getChar(row, col) {
+  getString() {
+    return this.text.map(line => line.map(char => char.val).concat("")).concat("")
+  }
+
+  getChar(row, column) {
     return this.text[row][column]
   }
 
   insertChar(character) {
-    let { row, column } = getPosOfChar(character)
+    let { row, column } = this.getPosOfChar(character)
     if (character.value === '\n') {
       let newLine = this.text[row].splice(column)
       this.text.splice(row, 0, newLine)
@@ -16,12 +22,29 @@ class Document {
     this.text[row].splice(column, 0, character)
   }
 
-  deleteChar(startPos, endPos) {
-    let rowDiff = endPos.row - startPos.row - 1
+  deleteChars(startPos, endPos) {
+    let rowDiff = Math.max(0, endPos.row - startPos.row - 1)
     this.text.splice(startPos + 1, rowDiff)
+    if (startPos.row === endPos.row) {
+      let colDiff = startPos.column - endPos.column
+      this.text.splice(startPos.column, colDiff)
+    } else {
+      this.text.splice(startPos.column)
+      this.text.splice(0, endPos.column)
+    }
   }
 
-  getLeftChar({row, col}) {
+  deleteChar(character) {
+    let { row, column } = this.getPosOfChar(character)
+    if (character.value === '\n') {
+      let nextLine = this.text[row+1]
+      this.text.splice(row+1, 1)
+      this.text[row] = this.text[row].concat(nextLine)
+    }
+    this.text[row].splice(column, 1)
+  }
+
+  getLeftChar({row, column}) {
     if (row === 0 && column === 0) {
       return []
     }
@@ -29,7 +52,7 @@ class Document {
     return this.text[row][column]
   }
 
-  getRightChar({row, col}) {
+  getRightChar({row, column}) {
     let numRows = this.text.length
     let numCols = this.text[row].length
     if (row > numRows) { //created a newline at EOF
@@ -58,3 +81,5 @@ class Document {
     return { row, column }
   }
 }
+
+export default TextDocument

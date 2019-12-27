@@ -1,7 +1,7 @@
 class Character {
   constructor(value, relativeIndex, siteId="a") {
     this.value = value
-    this.relativeIndex = receiveDelete
+    this.relativeIndex = relativeIndex
     this.siteId = siteId
   }
 
@@ -12,7 +12,7 @@ class Character {
     while(localIndex[i] && otherIndex[i] && localIndex[i] === otherIndex[i]) {
       i++
     }
-    if (!localIndex[i] && !relativeIndex[i]) {
+    if (!localIndex[i] && !this.relativeIndex[i]) {
       return this.siteId > otherCharacter.siteId
     } else {
       return !!localIndex[i]
@@ -31,3 +31,5 @@ class Character {
     return true
   }
 }
+
+export default Character

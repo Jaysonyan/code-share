@@ -1,18 +1,37 @@
 import React, { useState } from "react"
 import AceEditor from "react-ace"
-import socket from "../socket/socket.js"
+import socket from "../socket/socket"
+import CRDT from "./crdt"
 
 const Editor = () => {
-  const [snippet, updateSnippet] = useState("Hello World!")
+  const [code, updateCode] = useState("Hello World!")
   const serverSocket = socket()
+  const crdt = new CRDT()
 
   const onChange = (newVal, event) => {
-    updateSnippet(newVal)
+    console.log(event)
     serverSocket.emitInsert(newVal)
+    event.lines.forEach((line, rowOffset) => {
+      line.split("").forEach((char, colOffset) => {
+        let pos = {
+          row: event.start.row + rowOffset,
+          column: event.start.column + colOffset
+        }
+        switch(event.action) {
+          case "insert":
+            crdt.sendInsert(char, pos)
+            break
+          case "delete":
+            crdt.sendDelete(char, pos)
+            break
+        }
+      })
+    })
+    updateCode(crdt.toText())
   }
 
   serverSocket.handleInsert((insertOp) => {
-    updateSnippet(insertOp)
+    updateCode(insertOp)
   })
 
   return (
@@ -20,7 +39,7 @@ const Editor = () => {
       mode="java"
       theme="github"
       name="hello"
-      value={snippet}
+      value={code}
       onChange={onChange}
     />
   )

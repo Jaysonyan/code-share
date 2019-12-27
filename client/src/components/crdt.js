@@ -1,32 +1,38 @@
+const TextDocument = import("./textdocument")
+const Character = import("./character")
 const MAX_INDEX = 10
 
 class CRDT {
   constructor() {
-    this.document = new Document()
+    this.document = new TextDocument();
   }
 
   sendInsert(pos, char) {
-    let newIndex = getIndexFromPos(pos)
-    let newChar = { char: char, relativeIndex: newIndex }
-    console.log(newChar)
+    let newIndex = this.getIndexFromPos(pos)
+    let newChar = new Character(char, newIndex)
+    this.document.insertChar(newChar)
+    // Emit char
   }
 
-  sendDelete(startPos, endPos) {
-
+  sendDelete(pos) {
+    let deletedChar = this.document.getChar(pos.row, pos.column)
+    this.document.deleteChar(deletedChar)
+    // Emit char
   }
 
   receiveInsert(character) {
     this.document.insertChar(character)
   }
 
-  receiveDelete(pos) {
+  receiveDelete(character) {
+    this.document.deleteChar(character)
   }
 
   getIndexFromPos(pos) {
     let { row, column } = pos
 
-    let leftIdx = this.document.getLeftChar(pos)
-    let rightIdx = this.document.getLeftChar(pos)
+    let leftIdx = this.document.getLeftChar(pos).relativeIndex
+    let rightIdx = this.document.getRightChar(pos).relativeIndex
     let returnIdx = []
 
     let i = 0
@@ -34,16 +40,16 @@ class CRDT {
       returnIdx.push(leftIdx[i])
       i++
     }
-    if (!leftChar[i]) {
+    if (!leftIdx[i]) {
       if (rightIdx[i] === 1) {
         returnIdx.concat([0, MAX_INDEX/2])
       } else {
         returnIdx.push(rightIdx[i]/2)
       }
-    } else if (!rightChar[i]) {
+    } else if (!rightIdx[i]) {
       returnIdx.push(rightIdx+1)
     } else {
-      if (rightChar[i] - leftChar[i] === 1) {
+      if (rightIdx[i] - leftIdx[i] === 1) {
         returnIdx.concat([leftIdx[i], MAX_INDEX/2])
       } else {
         returnIdx.push((leftIdx[i] + rightIdx[i])/2)
@@ -53,6 +59,8 @@ class CRDT {
   }
 
   toText() {
-    return this.text.map(character => character.char).reduce((text, char) => text+char)
+    return this.document.getString()
   }
 }
+
+export default CRDT
