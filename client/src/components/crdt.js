@@ -3,8 +3,9 @@ const Character = import("./character")
 const MAX_INDEX = 10
 
 class CRDT {
+
   constructor() {
-    this.document = new TextDocument();
+    this.document = new TextDocument()
   }
 
   sendInsert(pos, char) {

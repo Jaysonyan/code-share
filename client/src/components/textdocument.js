@@ -1,6 +1,7 @@
 const { binarySearchText } = import("./utils")
 
 class TextDocument {
+
   constructor() {
     this.text = [[]]
   }
