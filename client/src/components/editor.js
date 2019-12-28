@@ -4,12 +4,11 @@ import socket from "../socket/socket"
 import CRDT from "./crdt"
 
 const Editor = () => {
-  const [code, updateCode] = useState("Hello World!")
+  const [code, updateCode] = useState("")
   const serverSocket = socket()
   const crdt = new CRDT()
 
   const onChange = (newVal, event) => {
-    console.log(event)
     serverSocket.emitInsert(newVal)
     event.lines.forEach((line, rowOffset) => {
       line.split("").forEach((char, colOffset) => {

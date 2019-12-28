@@ -1,4 +1,4 @@
-const { binarySearchText } = import("./utils")
+import { binarySearchText } from "./utils"
 
 class TextDocument {
 
@@ -7,7 +7,7 @@ class TextDocument {
   }
 
   getString() {
-    return this.text.map(line => line.map(char => char.val).concat("")).concat("")
+    return this.text.map(line => line.map(char => char.value).join("")).join("")
   }
 
   getChar(row, column) {
@@ -45,7 +45,7 @@ class TextDocument {
     this.text[row].splice(column, 1)
   }
 
-  getLeftChar({row, column}) {
+  getLeftChar(row, column) {
     if (row === 0 && column === 0) {
       return []
     }
@@ -53,10 +53,10 @@ class TextDocument {
     return this.text[row][column]
   }
 
-  getRightChar({row, column}) {
+  getRightChar(row, column) {
     let numRows = this.text.length
     let numCols = this.text[row].length
-    if (row > numRows) { //created a newline at EOF
+    if (row >= numRows-1) { //created a newline at EOF
       return []
     } else if (column === numCols) { //if inserted char is at EOL
       if (row === numRows) {

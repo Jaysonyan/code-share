@@ -1,5 +1,5 @@
-const TextDocument = import("./textdocument")
-const Character = import("./character")
+import TextDocument from "./textdocument"
+import Character from "./character"
 const MAX_INDEX = 10
 
 class CRDT {
@@ -8,7 +8,7 @@ class CRDT {
     this.document = new TextDocument()
   }
 
-  sendInsert(pos, char) {
+  sendInsert(char, pos) {
     let newIndex = this.getIndexFromPos(pos)
     let newChar = new Character(char, newIndex)
     this.document.insertChar(newChar)
@@ -32,8 +32,8 @@ class CRDT {
   getIndexFromPos(pos) {
     let { row, column } = pos
 
-    let leftIdx = this.document.getLeftChar(pos).relativeIndex
-    let rightIdx = this.document.getRightChar(pos).relativeIndex
+    let leftIdx = this.document.getLeftChar(row, column).relativeIndex || []
+    let rightIdx = this.document.getRightChar(row, column).relativeIndex || []
     let returnIdx = []
 
     let i = 0
