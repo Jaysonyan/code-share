@@ -6,12 +6,16 @@ import CRDT from "./crdt"
 const Editor = () => {
   const [code, updateCode] = useState("")
   const serverSocket = socket()
-  const crdt = new CRDT()
+  const [crdt, updateCRDT] = useState(new CRDT())
 
   const onChange = (newVal, event) => {
     serverSocket.emitInsert(newVal)
     event.lines.forEach((line, rowOffset) => {
-      line.split("").forEach((char, colOffset) => {
+      let insertChars = line.split("")
+      if (rowOffset < event.lines.length - 1) {
+        insertChars.push("\n")
+      }
+      insertChars.forEach((char, colOffset) => {
         let pos = {
           row: event.start.row + rowOffset,
           column: event.start.column + colOffset

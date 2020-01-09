@@ -2,7 +2,7 @@ function binarySearchText(array, val, compareFcn) {
   let start = 0
   let end = array.length - 1
   while(start < end) {
-    let middle = (start + end)/2
+    let middle = Math.floor((start + end)/2)
     let middleLine = array[middle]
     switch(compareFcn(middleLine, val)) {
       case -1:

@@ -49,24 +49,31 @@ class TextDocument {
     if (row === 0 && column === 0) {
       return []
     }
-    row -= column === 0 ? 1 : 0
+    if (column === 0) {
+      row -= 1
+      column = this.text[row].length - 1
+    } else {
+      column -= 1
+    }
     return this.text[row][column]
   }
 
   getRightChar(row, column) {
     let numRows = this.text.length
     let numCols = this.text[row].length
-    if (row >= numRows-1) { //created a newline at EOF
+    if (row === numRows) { //created a newline at EOF
       return []
     } else if (column === numCols) { //if inserted char is at EOL
-      if (row === numRows) {
+      if (row === numRows-1) {
         return []
       } else {
         row += 1
         column = 0
       }
+    } else {
+      column += 1
     }
-    return this.text[row][column].relativeIndex
+    return this.text[row][column]
   }
 
   getPosOfChar(char) {
@@ -74,11 +81,11 @@ class TextDocument {
       if (arrayVal.length === 0) {
         return 0
       }
-      return arrayVal[0].greaterThan(char) ? 1 : arrayVal[arrayVal.length-1].greaterThan(char) ? -1 : 0
+      return arrayVal[0].greaterThan(val) ? 1 : arrayVal[arrayVal.length-1].greaterThan(val) ? -1 : 0
     })
-    let column = binarySearchText(this.text[row], char, (arrayVal, val) => (
-      arrayVal.equalTo(val) ? 0 : arrayVal.greaterThan(val) ? 1 : -1
-    ))
+    let column = binarySearchText(this.text[row], char, (arrayVal, val) => {
+      return arrayVal.equalTo(val) ? 0 : arrayVal.greaterThan(val) ? 1 : -1
+    })
     return { row, column }
   }
 }
